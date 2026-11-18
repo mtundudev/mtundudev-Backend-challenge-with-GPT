@@ -5,15 +5,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon scr/server.js"
+    "dev": "nodemon scr/server.js",
+    "test":"vitest run"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@prisma/client": "^5.22.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.2",
+    "vitest": "^5.1.1"
   },
   "dependencies": {
     "dotenv": "^18.0.10",

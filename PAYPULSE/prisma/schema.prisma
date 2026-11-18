@@ -12,3 +12,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum EventType {
+  PAYMENT_SUCCEDED @map("payment.succeeded")
+  PAYMENT_FAILED   @map("payment.failed")
+  PAYMENT_REFUNDED @map("payment.refunded")
+}
+
+enum WebhookEventStatus {
+  PROCESSED
+  IGNORED
+}
+
+model Invoice {
+  id                String         @id @default(uuid()) @db.Uuid
+  reference         String         @unique
+  amountMinor       Int
+  currency          String         @db.Char(3)
+  status            InvoiceStatus  @default(PENDING)
+  lastEventSequence Int            @default(0)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  WebhookEvent      WebhookEvent[]
+}
+
+model WebhookEvent {
+  id              String    @id @default(uuid()) @db.Uuid
+  providerEventId String    @unique
+  invoiceId       String    @db.Uuid
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id])
+  eventType       EventType
+  sequence        Int
+  reason          String?
+  payload         Json
+  receivedAt      DateTime  @default(now())
+  processedAt     DateTime?
+
+  @@index([invoiceId, sequence])
+}
